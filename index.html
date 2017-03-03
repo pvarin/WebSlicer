@@ -2,6 +2,29 @@
 <html>
 <head>
   <title>Web Slicer</title>
+
+  <!-- Include Javascript -->
+  <script id="shader-fs" type="x-shader/x-fragment">
+    void main(void) {
+      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    }
+  </script>
+  <script id="shader-vs" type="x-shader/x-vertex">
+    attribute vec3 aVertexPosition;
+
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
+    
+    void main(void) {
+      gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+    }
+  </script>
+  <script type="text/javascript" src="deps/sylvester-0-1-3/sylvester.js"></script>
+  <script type="text/javascript" src="deps/glUtils.js"></script>
+  <script type="text/javascript" src="src/stl.js"></script>
+  <script type="text/javascript" src="src/graphics.js"></script>
+  <script type="text/javascript" src="src/main.js"></script>
+
 </head>
 <body>
   <h1>Web Slicer</h1>
@@ -17,23 +40,5 @@
   <canvas id="slice_view" width="640" height="480">
     Your browser doesn't support the canvas element.
   </canvas>
-  <!-- Include Javascript -->
-  <script id="shader-fs" type="x-shader/x-fragment">
-  void main(void) {
-    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-  }
-  </script>
-  <script id="shader-vs" type="x-shader/x-vertex">
-  attribute vec3 aVertexPosition;
-
-  uniform mat4 uMVMatrix;
-  uniform mat4 uPMatrix;
-  
-  void main(void) {
-    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-  }
-</script>
-  <script type="text/javascript" src="deps/sylvester-0-1-3/sylvester.js"></script>
-  <script type="text/javascript" src="src/main.js"></script>
 </body>
 </html>
