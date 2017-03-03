@@ -105,6 +105,75 @@ function initWebGL(canvas) {
   return gl;
 }
 
+function initShaders(gl) {
+  var fragmentShader = getShader(gl, 'shader-fs');
+  var vertexShader = getShader(gl, 'shader-vs');
+  
+  // Create the shader program
+  
+  shaderProgram = gl.createProgram();
+  gl.attachShader(shaderProgram, vertexShader);
+  gl.attachShader(shaderProgram, fragmentShader);
+  gl.linkProgram(shaderProgram);
+  
+  // If creating the shader program failed, alert
+  
+  if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+    console.log('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
+  }
+  
+  gl.useProgram(shaderProgram);
+  
+  vertexPositionAttribute = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
+  gl.enableVertexAttribArray(vertexPositionAttribute);
+}
+
+function getShader(gl, id, type) {
+  var shaderScript, theSource, currentChild, shader;
+  
+  shaderScript = document.getElementById(id);
+  
+  if (!shaderScript) {
+    return null;
+  }
+  
+  theSource = shaderScript.text;
+
+  if (!type) {
+    if (shaderScript.type == 'x-shader/x-fragment') {
+      type = gl.FRAGMENT_SHADER;
+    } else if (shaderScript.type == 'x-shader/x-vertex') {
+      type = gl.VERTEX_SHADER;
+    } else {
+      // Unknown shader type
+      return null;
+    }
+  }
+  shader = gl.createShader(type);
+
+  gl.shaderSource(shader, theSource);
+    
+  // Compile the shader program
+  gl.compileShader(shader);  
+    
+  // See if it compiled successfully
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {  
+      console.log('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));  
+      gl.deleteShader(shader);
+      return null;  
+  }
+    
+  return shader;
+}
+
+function setMatrixUniforms(gl) {
+  var pUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+  gl.uniformMatrix4fv(pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
+
+  var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+  gl.uniformMatrix4fv(mvUniform, false, new Float32Array(mvMatrix.flatten()));
+}
+
 function drawObject(vertices, indices){
   vertexBuffer = glObject.createBuffer();
   indexBuffer = glObject.createBuffer();
@@ -113,7 +182,8 @@ function drawObject(vertices, indices){
   glObject.bufferData(glObject.ARRAY_BUFFER, vertices, glObject.STATIC_DRAW);
   glObject.bufferData(glObject.ELEMENT_ARRAY_BUFFER, indices, glObject.STATIC_DRAW);
   
-  // TODO: setup the shader
+  perspectiveMatrix = makePerspective(45, 640.0/480.0, 0.1, 100.0);
+  setMatrixUniforms(glObject);
 
   console.log("drawing triangles");
   console.log("detected " + indices.length + " vertices");
@@ -133,6 +203,7 @@ window.onload = function() {
   // initialize the WebGL contexts
   glObject = initWebGL(objectCanvas);
   glSlice = initWebGL(sliceCanvas);
+  initShaders(glObject);
 
   // setup the object canvas
   glObject.getExtension("OES_element_index_uint");
