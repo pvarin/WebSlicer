@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Web Slicer</title>
+</head>
+<body>
+  <h1>Web Slicer</h1>
+  <!-- Upload File -->
+  <label>Upload an STL file:
+    <input type="file" id="file_input" name="stl_file"/>
+  </label>
+  <!-- View 3D object -->
+  <canvas id="object_view" width="640" height="480">
+    Your browser doesn't support the canvas element.
+  </canvas>
+  <!-- View slice -->
+  <canvas id="slice_view" width="640" height="480">
+    Your browser doesn't support the canvas element.
+  </canvas>
+  <!-- Include Javascript -->
+  <script type="text/javascript" src="src/main.js"></script>
+</body>
+</html>
